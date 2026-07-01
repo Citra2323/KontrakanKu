@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../frontend/public')));
+app.use(express.static(path.join(__dirname, '../../frontend/public')));
 
 function camelUnit(u) {
   return {
@@ -154,7 +154,7 @@ app.get('/api/stats', async (req, res) => {
 });
 
 app.get('*', (_, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/public/index.html'));
+  res.sendFile(path.join(__dirname, '../../frontend/public/index.html'));
 });
 
 // ─────────────────────────────────────────────
