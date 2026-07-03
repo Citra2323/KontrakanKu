@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html class="light" lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>KontrakanKu - Advanced Estate Management System</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-surface":"#2f3036","surface":"#faf8ff","on-secondary-fixed":"#0b1c30","tertiary-fixed-dim":"#4edea3","on-primary-fixed-variant":"#264191","on-tertiary":"#ffffff","error":"#ba1a1a","on-secondary-fixed-variant":"#38485d","tertiary-container":"#004a31","inverse-primary":"#b6c4ff","on-tertiary-fixed-variant":"#005236","on-tertiary-container":"#27c38a","surface-container-highest":"#e3e1e9","primary-fixed-dim":"#b6c4ff","surface-variant":"#e3e1e9","background":"#faf8ff","secondary-fixed":"#d3e4fe","surface-container-low":"#f4f3fa","on-error-container":"#93000a","outline-variant":"#c5c5d3","secondary":"#505f76","surface-dim":"#dad9e1","on-error":"#ffffff","on-primary-container":"#90a8ff","on-surface":"#1a1b21","secondary-container":"#d0e1fb","surface-tint":"#4059aa","on-primary":"#ffffff","primary-fixed":"#dce1ff","on-surface-variant":"#444651","on-background":"#1a1b21","error-container":"#ffdad6","on-secondary-container":"#54647a","tertiary-fixed":"#6ffbbe","outline":"#757682","on-tertiary-fixed":"#002113","on-secondary":"#ffffff","surface-container-high":"#e9e7ef","on-primary-fixed":"#00164e","surface-container":"#eeedf4","primary-container":"#1e3a8a","secondary-fixed-dim":"#b7c8e1","tertiary":"#00311f","primary":"#00236f","inverse-on-surface":"#f1f0f7","surface-bright":"#faf8ff","surface-container-lowest":"#ffffff"
+            },
+            borderRadius: { DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px" },
+            fontFamily: { "headline-md":["Inter"],"headline-lg":["Inter"],"body-lg":["Inter"],"label-md":["Inter"],"display-lg":["Inter"],"code-md":["Inter"],"body-md":["Inter"],"title-lg":["Inter"] },
+            fontSize: { "headline-md":["24px",{lineHeight:"32px",fontWeight:"600"}],"headline-lg":["32px",{lineHeight:"40px",letterSpacing:"-0.01em",fontWeight:"600"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.05em",fontWeight:"600"}],"display-lg":["48px",{lineHeight:"56px",letterSpacing:"-0.02em",fontWeight:"700"}],"code-md":["14px",{lineHeight:"20px",fontWeight:"500"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"title-lg":["20px",{lineHeight:"28px",fontWeight:"600"}] }
+          }
+        }
+      }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+        .view-content { display:none; }
+        .view-content.active { display:block; }
+        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:200; align-items:center; justify-content:center; }
+        .modal-overlay.open { display:flex; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-hidden">
+
+<!-- ═══════════════════════ SIDEBAR ═══════════════════════ -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface shadow-[0px_4px_20px_rgba(30,58,138,0.05)] flex flex-col py-8 z-50">
+    <div class="px-6 mb-10">
+        <h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">KontrakanKu</h1>
+        <p class="font-label-md text-label-md text-secondary opacity-70">Estate Management</p>
+    </div>
+    <nav class="flex-1 px-3 space-y-1" id="sidebar-nav">
+        <a class="nav-item flex items-center px-3 py-3 rounded-lg transition-colors duration-200" href="#" data-target="dashboard"><span class="material-symbols-outlined mr-3">dashboard</span><span class="font-body-md">Dashboard</span></a>
+        <a class="nav-item flex items-center px-3 py-3 rounded-lg transition-colors duration-200" href="#" data-target="daftar-kompleks"><span class="material-symbols-outlined mr-3">domain</span><span class="font-body-md">Daftar Kompleks</span></a>
+        <a class="nav-item flex items-center px-3 py-3 rounded-lg transition-colors duration-200" href="#" data-target="detail-kompleks"><span class="material-symbols-outlined mr-3">holiday_village</span><span class="font-body-md">Detail Kompleks</span></a>
+        <a class="nav-item flex items-center px-3 py-3 rounded-lg transition-colors duration-200" href="#" data-target="data-penyewa"><span class="material-symbols-outlined mr-3">groups</span><span class="font-body-md">Data Penyewa</span></a>
+        <a class="nav-item flex items-center px-3 py-3 rounded-lg transition-colors duration-200" href="#" data-target="monitoring-pembayaran"><span class="material-symbols-outlined mr-3">payments</span><span class="font-body-md">Monitoring Pembayaran</span></a>
+        <a class="nav-item flex items-center px-3 py-3 rounded-lg transition-colors duration-200" href="#" data-target="laporan"><span class="material-symbols-outlined mr-3">analytics</span><span class="font-body-md">Laporan</span></a>
+    </nav>
+    <div class="px-3 mt-auto pt-6 border-t border-outline-variant">
+        <a class="flex items-center px-3 py-3 rounded-lg text-secondary hover:bg-surface-container-low transition-colors mb-1" href="#"><span class="material-symbols-outlined mr-3">settings</span><span class="font-body-md">Settings</span></a>
+        <a class="flex items-center px-3 py-3 rounded-lg text-error hover:bg-error-container transition-colors" href="#"><span class="material-symbols-outlined mr-3">logout</span><span class="font-body-md">Logout</span></a>
+    </div>
+</aside>
+
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<main class="ml-64 min-h-screen flex flex-col">
+    <header class="h-16 fixed top-0 right-0 left-64 bg-surface border-b border-outline-variant flex justify-between items-center px-10 z-40">
+        <div class="flex items-center gap-4 flex-1">
+            <div class="relative w-full max-w-md">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+                <input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary outline-none text-body-md" placeholder="Cari unit atau nama penyewa..." type="text" id="global-search"/>
+            </div>
+        </div>
+        <div class="flex items-center gap-6">
+            <button class="p-2 hover:bg-surface-container-highest rounded-full"><span class="material-symbols-outlined text-on-surface-variant">notifications</span></button>
+            <div class="flex items-center gap-3 pl-6 border-l border-outline-variant">
+                <div class="text-right hidden lg:block">
+                    <p class="font-label-md text-on-surface font-bold">Citra Resky Andini</p>
+                    <p class="text-[10px] text-secondary">Estate Manager</p>
+                </div>
+                <div class="w-10 h-10 rounded-full border-2 border-primary-fixed bg-primary-fixed-dim flex items-center justify-center font-bold text-primary">CR</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══════════════════════ CANVAS ═══════════════════════ -->
+    <div class="mt-16 p-10 overflow-y-auto h-[calc(100vh-64px)]" id="canvas-area">
+
+        <!-- ── DASHBOARD ── -->
+        <section id="dashboard" class="view-content">
+            <div class="mb-8">
+                <h2 class="font-headline-lg text-headline-lg text-primary mb-1">Dashboard Real-Time</h2>
+                <p class="text-body-lg text-secondary">Ringkasan operasional dan analisis keuangan pengelolaan manajemen kontrakan Anda.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant"><p class="text-label-md text-secondary uppercase mb-1">Total Kompleks</p><h3 class="text-headline-md font-bold text-on-surface" id="dash-total-kompleks">—</h3></div>
+                <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant"><p class="text-label-md text-secondary uppercase mb-1">Total Unit Properti</p><h3 class="text-headline-md font-bold text-on-surface" id="dash-total-unit">—</h3></div>
+                <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant"><p class="text-label-md text-secondary uppercase mb-1">Unit Terisi (Full)</p><h3 class="text-headline-md font-bold text-error" id="dash-unit-terisi">—</h3></div>
+                <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant"><p class="text-label-md text-secondary uppercase mb-1">Unit Kosong (Available)</p><h3 class="text-headline-md font-bold text-emerald-600" id="dash-unit-kosong">—</h3></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant"><p class="text-label-md text-secondary uppercase mb-1">Penyewa Aktif</p><h3 class="text-headline-md font-bold text-primary" id="dash-penyewa-aktif">—</h3></div>
+                <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant"><p class="text-label-md text-secondary uppercase mb-1">Unit Belum Bayar</p><h3 class="text-headline-md font-bold text-amber-600" id="dash-belum-bayar">—</h3></div>
+                <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant"><p class="text-label-md text-secondary uppercase mb-1">Estimasi Pendapatan Bulanan</p><h3 class="text-headline-md font-bold text-emerald-700" id="dash-pendapatan-bulanan">—</h3></div>
+            </div>
+        </section>
+
+        <!-- ── DAFTAR KOMPLEKS ── -->
+        <section id="daftar-kompleks" class="view-content">
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h2 class="font-headline-lg text-headline-lg text-primary mb-1">Daftar Wilayah Kompleks</h2>
+                    <p class="text-body-lg text-secondary">Klik pada nama klaster atau item kompleks untuk meninjau ketersediaan unit ekosistem.</p>
+                </div>
+                <button onclick="openModalKompleks()" class="bg-primary text-on-primary px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:shadow-md transition-shadow text-body-md">
+                    <span class="material-symbols-outlined">add</span> Tambah Kompleks
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="kompleks-card-container"></div>
+        </section>
+
+        <!-- ── DETAIL KOMPLEKS ── -->
+        <section id="detail-kompleks" class="view-content">
+            <div class="mb-6">
+                <h2 class="font-headline-lg text-headline-lg text-primary mb-1">Detail Kompleks & Unit Properti</h2>
+                <p class="text-body-lg text-secondary">Pilih kompleks untuk melihat denah unit dan klik kotak unit untuk menampilkan info detail.</p>
+            </div>
+            <div class="flex gap-4 mb-6 items-end flex-wrap">
+                <div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant">
+                    <label class="block text-[10px] uppercase text-secondary font-bold mb-1">Pilih Klaster Kompleks</label>
+                    <select id="detail-kompleks-selector" class="bg-surface-container-lowest border border-outline-variant rounded-lg px-3 py-2 text-body-md outline-none min-w-[200px]"></select>
+                </div>
+                <button onclick="openModalUnit()" class="bg-primary text-on-primary px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:shadow-md transition-shadow text-body-md">
+                    <span class="material-symbols-outlined">add</span> Tambah Unit
+                </button>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant">
+                    <h3 class="font-title-lg mb-4 text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-primary">apps</span> Peta Blok Grid Unit</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4" id="unit-grid-map"></div>
+                </div>
+                <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant" id="detail-panel-unit">
+                    <h3 class="font-title-lg mb-4 text-on-surface flex items-center gap-2 border-b pb-2"><span class="material-symbols-outlined text-primary">info</span> Panel Informasi Detail</h3>
+                    <div id="panel-placeholder" class="text-center py-12 text-secondary">
+                        <span class="material-symbols-outlined text-4xl block mb-2 opacity-40">touch_app</span>
+                        <p class="text-body-md">Silakan klik salah satu kotak unit di peta grid.</p>
+                    </div>
+                    <div id="panel-content" class="hidden space-y-4">
+                        <div><label class="text-[10px] uppercase font-bold text-secondary">Nama Unit</label><p class="font-headline-md text-primary" id="p-nama-unit">-</p></div>
+                        <div><label class="text-[10px] uppercase font-bold text-secondary">Status Ketersediaan</label><div class="mt-1"><span id="p-status-unit" class="px-3 py-1 rounded-full text-xs font-bold">-</span></div></div>
+                        <div><label class="text-[10px] uppercase font-bold text-secondary">Harga Sewa / Bulan</label><p class="font-title-lg font-bold text-on-surface" id="p-harga-unit">-</p></div>
+                        <div class="pt-2 border-t border-dashed border-outline-variant">
+                            <label class="text-[10px] uppercase font-bold text-secondary">Nama Penyewa</label><p class="font-body-md font-bold text-on-surface" id="p-nama-penyewa">-</p>
+                        </div>
+                        <div><label class="text-[10px] uppercase font-bold text-secondary">Nomor Telepon</label><p class="font-body-md text-secondary" id="p-telp-penyewa">-</p></div>
+                        <div><label class="text-[10px] uppercase font-bold text-secondary">Tanggal Masuk</label><p class="font-body-md text-secondary" id="p-tgl-masuk">-</p></div>
+                        <div><label class="text-[10px] uppercase font-bold text-secondary">Jatuh Tempo</label><p class="font-body-md font-bold text-amber-700" id="p-jatuh-tempo">-</p></div>
+                        <div class="pt-3 border-t border-outline-variant flex gap-2" id="panel-actions"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── DATA PENYEWA ── -->
+        <section id="data-penyewa" class="view-content">
+            <div class="mb-6">
+                <h2 class="font-headline-lg text-headline-lg text-primary mb-1">Master Data Informasi Penyewa</h2>
+                <p class="text-body-lg text-secondary">Direktori komprehensif data profil kontak pelanggan aktif.</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-surface-container-low">
+                        <tr>
+                            <th class="px-6 py-4 font-label-md text-secondary uppercase">Nama Lengkap</th>
+                            <th class="px-6 py-4 font-label-md text-secondary uppercase">Nomor Telepon</th>
+                            <th class="px-6 py-4 font-label-md text-secondary uppercase">Kompleks / Unit</th>
+                            <th class="px-6 py-4 font-label-md text-secondary uppercase">Tanggal Masuk</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant" id="table-penyewa-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ── MONITORING PEMBAYARAN ── -->
+        <section id="monitoring-pembayaran" class="view-content">
+            <div class="mb-6">
+                <h2 class="font-headline-lg text-headline-lg text-primary mb-1">Monitoring & Pelacakan Pembayaran</h2>
+                <p class="text-body-lg text-secondary">Status ledger tagihan keuangan real-time berdasarkan status invoice berkala.</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-surface-container-low">
+                            <tr>
+                                <th class="px-6 py-4 font-label-md text-secondary uppercase">Nama Penyewa</th>
+                                <th class="px-6 py-4 font-label-md text-secondary uppercase">Kompleks</th>
+                                <th class="px-6 py-4 font-label-md text-secondary uppercase">Unit</th>
+                                <th class="px-6 py-4 font-label-md text-secondary uppercase">Harga Sewa</th>
+                                <th class="px-6 py-4 font-label-md text-secondary uppercase">Jatuh Tempo</th>
+                                <th class="px-6 py-4 font-label-md text-secondary uppercase">Terakhir Bayar</th>
+                                <th class="px-6 py-4 font-label-md text-secondary uppercase text-center">Status Pembayaran</th>
+                                <th class="px-6 py-4 font-label-md text-secondary uppercase text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant" id="table-monitoring-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── LAPORAN ── -->
+        <section id="laporan" class="view-content">
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h2 class="font-headline-lg text-headline-lg text-primary mb-1">Laporan & Statistik Keuangan</h2>
+                    <p class="text-body-lg text-secondary">Analisis performa bisnis, rasio hunian properti, dan ekspor data pembukuan.</p>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="alert('Exporting to Excel...')" class="bg-surface-container-highest text-primary px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-outline-variant transition-colors text-body-md"><span class="material-symbols-outlined">table_view</span> Export Excel</button>
+                    <button onclick="alert('Generating PDF Report...')" class="bg-primary text-on-primary px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:shadow-md transition-shadow text-body-md"><span class="material-symbols-outlined">picture_as_pdf</span> Export PDF</button>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant"><p class="text-label-md text-secondary uppercase mb-1">Pendapatan Bulanan</p><h3 class="text-title-lg font-bold text-emerald-700" id="rep-pendapatan-bulanan">—</h3></div>
+                <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant"><p class="text-label-md text-secondary uppercase mb-1">Proyeksi Tahunan</p><h3 class="text-title-lg font-bold text-primary" id="rep-pendapatan-tahunan">—</h3></div>
+                <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant"><p class="text-label-md text-secondary uppercase mb-1">Total Tunggakan</p><h3 class="text-title-lg font-bold text-error" id="rep-total-tunggakan">—</h3></div>
+                <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant"><p class="text-label-md text-secondary uppercase mb-1">Occupancy Rate</p><h3 class="text-title-lg font-bold text-blue-600" id="rep-occupancy-rate">—</h3></div>
+            </div>
+            <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant">
+                <h3 class="font-title-lg mb-4 text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-primary">bar_chart</span> Grafik Tren Pendapatan Bulanan (2026)</h3>
+                <div class="h-64 flex items-end gap-6 pt-6 px-4 border-b border-l border-outline-variant">
+                    <div class="flex-1 bg-primary/20 hover:bg-primary transition-colors h-[40%] rounded-t relative group cursor-pointer"><span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-surface text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">Jan</span></div>
+                    <div class="flex-1 bg-primary/20 hover:bg-primary transition-colors h-[55%] rounded-t relative group cursor-pointer"><span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-surface text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">Feb</span></div>
+                    <div class="flex-1 bg-primary/20 hover:bg-primary transition-colors h-[68%] rounded-t relative group cursor-pointer"><span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-surface text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">Mar</span></div>
+                    <div class="flex-1 bg-primary/20 hover:bg-primary transition-colors h-[80%] rounded-t relative group cursor-pointer"><span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-surface text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">Apr</span></div>
+                    <div class="flex-1 bg-primary/30 hover:bg-primary transition-colors h-[92%] rounded-t relative group cursor-pointer"><span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-surface text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">Mei</span></div>
+                    <div class="flex-1 bg-primary h-[95%] rounded-t relative group cursor-pointer"><span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-surface text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">Jun (Kini)</span></div>
+                </div>
+                <div class="flex justify-between text-[11px] text-secondary mt-2 px-2">
+                    <span>Januari</span><span>Februari</span><span>Maret</span><span>April</span><span>Mei</span><span class="font-bold text-primary">Juni</span>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<!-- ═══════════════════════ MODAL TAMBAH KOMPLEKS ═══════════════════════ -->
+<div class="modal-overlay" id="modal-kompleks">
+    <div class="bg-surface-container-lowest rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
+        <h3 class="font-title-lg text-on-surface mb-4">Tambah Kompleks Baru</h3>
+        <div class="space-y-4">
+            <div>
+                <label class="text-[10px] uppercase font-bold text-secondary block mb-1">Nama Kompleks</label>
+                <input id="inp-kompleks-nama" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary" placeholder="cth. Taktakan Hills"/>
+            </div>
+            <div>
+                <label class="text-[10px] uppercase font-bold text-secondary block mb-1">Alamat</label>
+                <input id="inp-kompleks-alamat" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary" placeholder="cth. Kec. Taktakan, Serang"/>
+            </div>
+        </div>
+        <div class="flex justify-end gap-3 mt-6">
+            <button onclick="closeModal('modal-kompleks')" class="px-4 py-2 rounded-lg border border-outline-variant text-secondary hover:bg-surface-container-low text-body-md">Batal</button>
+            <button onclick="submitKompleks()" class="px-4 py-2 rounded-lg bg-primary text-on-primary font-bold text-body-md">Simpan</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════ MODAL TAMBAH UNIT ═══════════════════════ -->
+<div class="modal-overlay" id="modal-unit">
+    <div class="bg-surface-container-lowest rounded-2xl shadow-xl w-full max-w-lg mx-4 p-6 overflow-y-auto max-h-[90vh]">
+        <h3 class="font-title-lg text-on-surface mb-4" id="modal-unit-title">Tambah Unit Baru</h3>
+        <input type="hidden" id="inp-unit-id"/>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="col-span-2">
+                <label class="text-[10px] uppercase font-bold text-secondary block mb-1">Kompleks</label>
+                <select id="inp-unit-kompleksId" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary"></select>
+            </div>
+            <div>
+                <label class="text-[10px] uppercase font-bold text-secondary block mb-1">Nama Unit</label>
+                <input id="inp-unit-nama" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary" placeholder="cth. Kontrakan 1"/>
+            </div>
+            <div>
+                <label class="text-[10px] uppercase font-bold text-secondary block mb-1">Harga / Bulan (Rp)</label>
+                <input id="inp-unit-harga" type="number" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary" placeholder="1200000"/>
+            </div>
+            <div class="col-span-2">
+                <label class="text-[10px] uppercase font-bold text-secondary block mb-1">Status</label>
+                <select id="inp-unit-status" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary">
+                    <option value="Available">Available (Kosong)</option>
+                    <option value="Full">Full (Terisi)</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-[10px] uppercase font-bold text-secondary block mb-1">Nama Penyewa</label>
+                <input id="inp-unit-penyewa" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary" placeholder="-"/>
+            </div>
+            <div>
+                <label class="text-[10px] uppercase font-bold text-secondary block mb-1">No. Telepon</label>
+                <input id="inp-unit-telp" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary" placeholder="-"/>
+            </div>
+            <div>
+                <label class="text-[10px] uppercase font-bold text-secondary block mb-1">Tanggal Masuk</label>
+                <input id="inp-unit-tglMasuk" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary" placeholder="01 Jan 2025"/>
+            </div>
+            <div>
+                <label class="text-[10px] uppercase font-bold text-secondary block mb-1">Jatuh Tempo</label>
+                <input id="inp-unit-jatuhTempo" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary" placeholder="01 Jan 2026"/>
+            </div>
+            <div>
+                <label class="text-[10px] uppercase font-bold text-secondary block mb-1">Terakhir Bayar</label>
+                <input id="inp-unit-terakhirBayar" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary" placeholder="-"/>
+            </div>
+            <div>
+                <label class="text-[10px] uppercase font-bold text-secondary block mb-1">Status Bayar</label>
+                <select id="inp-unit-statusBayar" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary">
+                    <option value="-">-</option>
+                    <option value="Lunas">Lunas</option>
+                    <option value="Belum Bayar">Belum Bayar</option>
+                    <option value="Jatuh Tempo Dekat">Jatuh Tempo Dekat</option>
+                    <option value="Menunggak">Menunggak</option>
+                </select>
+            </div>
+        </div>
+        <div class="flex justify-end gap-3 mt-6">
+            <button onclick="closeModal('modal-unit')" class="px-4 py-2 rounded-lg border border-outline-variant text-secondary hover:bg-surface-container-low text-body-md">Batal</button>
+            <button onclick="submitUnit()" class="px-4 py-2 rounded-lg bg-primary text-on-primary font-bold text-body-md">Simpan</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+//  CONFIG
+// ─────────────────────────────────────────────
+const API_BASE = '/api';
+
+// ─────────────────────────────────────────────
+//  HELPERS
+// ─────────────────────────────────────────────
+const formatRp = n => 'Rp ' + Number(n).toLocaleString('id-ID');
+
+function getStatusBayarBadge(status) {
+    const map = {
+        'Lunas':              'bg-emerald-100 text-emerald-800',
+        'Belum Bayar':        'bg-rose-100 text-rose-800',
+        'Jatuh Tempo Dekat':  'bg-amber-100 text-amber-800',
+        'Menunggak':          'bg-red-900/10 text-red-900',
+    };
+    const cls = map[status];
+    if (!cls) return `<span class="text-xs text-secondary">-</span>`;
+    return `<span class="inline-flex items-center gap-1 px-3 py-1 ${cls} text-xs font-bold rounded-full">${status.toUpperCase()}</span>`;
+}
+
+// ─────────────────────────────────────────────
+//  API LAYER
+// ─────────────────────────────────────────────
+async function apiFetch(path, opts = {}) {
+    const res = await fetch(API_BASE + path, {
+        headers: { 'Content-Type': 'application/json' },
+        ...opts,
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: res.statusText }));
+        throw new Error(err.error || 'Request failed');
+    }
+    return res.json();
+}
+
+// ─────────────────────────────────────────────
+//  APP STATE
+// ─────────────────────────────────────────────
+let state = { kompleks: [], unit: [], stats: {}, selectedUnitId: null };
+
+async function loadAll() {
+    const [kompleks, unit, stats] = await Promise.all([
+        apiFetch('/kompleks'),
+        apiFetch('/unit'),
+        apiFetch('/stats'),
+    ]);
+    state.kompleks = kompleks;
+    state.unit     = unit;
+    state.stats    = stats;
+}
+
+// ─────────────────────────────────────────────
+//  RENDER: DASHBOARD
+// ─────────────────────────────────────────────
+function renderDashboard() {
+    const s = state.stats;
+    document.getElementById('dash-total-kompleks').innerText    = s.totalKompleks;
+    document.getElementById('dash-total-unit').innerText        = s.totalUnit;
+    document.getElementById('dash-unit-terisi').innerText       = s.unitTerisi;
+    document.getElementById('dash-unit-kosong').innerText       = s.unitKosong;
+    document.getElementById('dash-penyewa-aktif').innerText     = s.penyewaAktif + ' Orang';
+    document.getElementById('dash-belum-bayar').innerText       = s.belumBayar + ' Unit';
+    document.getElementById('dash-pendapatan-bulanan').innerText= formatRp(s.pendapatanBulanan);
+}
+
+// ─────────────────────────────────────────────
+//  RENDER: LAPORAN
+// ─────────────────────────────────────────────
+function renderLaporan() {
+    const s = state.stats;
+    document.getElementById('rep-pendapatan-bulanan').innerText = formatRp(s.pendapatanBulanan);
+    document.getElementById('rep-pendapatan-tahunan').innerText = formatRp(s.pendapatanTahunan);
+    document.getElementById('rep-total-tunggakan').innerText    = formatRp(s.totalTunggakan);
+    document.getElementById('rep-occupancy-rate').innerText     = s.occupancyRate + '%';
+}
+
+// ─────────────────────────────────────────────
+//  RENDER: DAFTAR KOMPLEKS
+// ─────────────────────────────────────────────
+function renderDaftarKompleks() {
+    const container = document.getElementById('kompleks-card-container');
+    container.innerHTML = '';
+    state.kompleks.forEach(k => {
+        const listUnit = state.unit.filter(u => u.kompleksId === k.id);
+        const total  = listUnit.length;
+        const terisi = listUnit.filter(u => u.status === 'Full').length;
+        const card = document.createElement('div');
+        card.className = "bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm hover:border-primary/40 transition-all cursor-pointer";
+        card.innerHTML = `
+            <div class="flex items-start justify-between mb-2">
+                <h4 class="font-title-lg text-on-surface font-bold">${k.nama}</h4>
+                <span class="material-symbols-outlined text-primary">domain</span>
+            </div>
+            <p class="text-body-md text-secondary mb-4">${k.alamat}</p>
+            <div class="flex justify-between text-label-md border-t pt-4 border-outline-variant">
+                <span class="text-secondary">Total: <b>${total} Unit</b></span>
+                <span class="text-emerald-700 font-bold">Terisi: ${terisi}</span>
+            </div>`;
+        card.onclick = () => {
+            document.getElementById('detail-kompleks-selector').value = k.id;
+            renderUnitGridMap(k.id);
+            switchView('detail-kompleks');
+        };
+        container.appendChild(card);
+    });
+}
+
+// ─────────────────────────────────────────────
+//  RENDER: DETAIL KOMPLEKS DROPDOWN
+// ─────────────────────────────────────────────
+function initDetailDropdown() {
+    const sel = document.getElementById('detail-kompleks-selector');
+    sel.innerHTML = '';
+    state.kompleks.forEach(k => {
+        const opt = document.createElement('option');
+        opt.value = k.id; opt.innerText = k.nama;
+        sel.appendChild(opt);
+    });
+    sel.onchange = e => renderUnitGridMap(e.target.value);
+}
+
+// ─────────────────────────────────────────────
+//  RENDER: UNIT GRID MAP
+// ─────────────────────────────────────────────
+function renderUnitGridMap(kompleksId) {
+    const grid = document.getElementById('unit-grid-map');
+    grid.innerHTML = '';
+    state.unit.filter(u => u.kompleksId === kompleksId).forEach(u => {
+        const isFull = u.status === 'Full';
+        const block = document.createElement('div');
+        block.className = `p-4 border rounded-xl text-center cursor-pointer transition-all hover:scale-[1.02] ${isFull ? 'bg-rose-50 border-rose-200 text-rose-900' : 'bg-emerald-50 border-emerald-200 text-emerald-900'}`;
+        block.innerHTML = `
+            <p class="font-bold text-body-lg">${u.nama}</p>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full inline-block mt-2 ${isFull ? 'bg-rose-200/60 text-rose-800' : 'bg-emerald-200/60 text-emerald-800'}">${isFull ? 'Full' : 'Available'}</span>`;
+        block.onclick = () => showDetailPanelUnit(u);
+        grid.appendChild(block);
+    });
+    document.getElementById('panel-placeholder').classList.remove('hidden');
+    document.getElementById('panel-content').classList.add('hidden');
+    state.selectedUnitId = null;
+}
+
+function showDetailPanelUnit(unit) {
+    state.selectedUnitId = unit.id;
+    document.getElementById('panel-placeholder').classList.add('hidden');
+    document.getElementById('panel-content').classList.remove('hidden');
+    document.getElementById('p-nama-unit').innerText    = unit.nama;
+    document.getElementById('p-harga-unit').innerText   = formatRp(unit.harga);
+    document.getElementById('p-nama-penyewa').innerText = unit.penyewa;
+    document.getElementById('p-telp-penyewa').innerText = unit.telp;
+    document.getElementById('p-tgl-masuk').innerText    = unit.tglMasuk;
+    document.getElementById('p-jatuh-tempo').innerText  = unit.jatuhTempo;
+    const badge = document.getElementById('p-status-unit');
+    if (unit.status === 'Full') {
+        badge.className = "px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800";
+        badge.innerText = "Full (Terisi)";
+    } else {
+        badge.className = "px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800";
+        badge.innerText = "Available (Kosong)";
+    }
+    // Action buttons
+    const actionsEl = document.getElementById('panel-actions');
+    actionsEl.innerHTML = `
+        <button onclick="openModalUnit('${unit.id}')" class="flex-1 px-3 py-2 rounded-lg bg-surface-container-low border border-outline-variant text-on-surface text-body-md font-bold hover:bg-outline-variant transition-colors flex items-center justify-center gap-1"><span class="material-symbols-outlined text-sm">edit</span> Edit</button>
+        <button onclick="deleteUnit('${unit.id}')" class="flex-1 px-3 py-2 rounded-lg bg-error-container text-error text-body-md font-bold hover:opacity-80 transition-colors flex items-center justify-center gap-1"><span class="material-symbols-outlined text-sm">delete</span> Hapus</button>`;
+}
+
+// ─────────────────────────────────────────────
+//  RENDER: TABLE PENYEWA
+// ─────────────────────────────────────────────
+function renderTablePenyewa() {
+    const tbody = document.getElementById('table-penyewa-body');
+    tbody.innerHTML = '';
+    state.unit.filter(u => u.status === 'Full').forEach(u => {
+        const kNama = (state.kompleks.find(k => k.id === u.kompleksId) || {}).nama || '-';
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-surface-container-low transition-colors";
+        tr.innerHTML = `
+            <td class="px-6 py-4 font-bold text-on-surface">${u.penyewa}</td>
+            <td class="px-6 py-4 text-secondary">${u.telp}</td>
+            <td class="px-6 py-4 font-code-md text-primary font-medium">${kNama} — ${u.nama}</td>
+            <td class="px-6 py-4 text-secondary">${u.tglMasuk}</td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+// ─────────────────────────────────────────────
+//  RENDER: TABLE MONITORING
+// ─────────────────────────────────────────────
+function renderTableMonitoring() {
+    const tbody = document.getElementById('table-monitoring-body');
+    tbody.innerHTML = '';
+    state.unit.filter(u => u.status === 'Full').forEach(u => {
+        const kNama = (state.kompleks.find(k => k.id === u.kompleksId) || {}).nama || '-';
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-surface-container-low transition-colors";
+        tr.innerHTML = `
+            <td class="px-6 py-4 font-bold text-on-surface">${u.penyewa}</td>
+            <td class="px-6 py-4 text-secondary">${kNama}</td>
+            <td class="px-6 py-4 font-code-md text-center">${u.nama}</td>
+            <td class="px-6 py-4 font-bold text-on-surface">${formatRp(u.harga)}</td>
+            <td class="px-6 py-4 text-secondary">${u.jatuhTempo}</td>
+            <td class="px-6 py-4 text-secondary">${u.terakhirBayar}</td>
+            <td class="px-6 py-4 text-center">${getStatusBayarBadge(u.statusBayar)}</td>
+            <td class="px-6 py-4 text-center">
+                <button onclick="openModalUnit('${u.id}')" class="text-primary hover:underline text-xs font-bold">Edit</button>
+            </td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+// ─────────────────────────────────────────────
+//  FULL REFRESH
+// ─────────────────────────────────────────────
+async function refreshAll() {
+    await loadAll();
+    renderDashboard();
+    renderLaporan();
+    renderDaftarKompleks();
+    initDetailDropdown();
+    if (state.kompleks.length > 0) {
+        const curId = document.getElementById('detail-kompleks-selector').value || state.kompleks[0].id;
+        renderUnitGridMap(curId);
+    }
+    renderTablePenyewa();
+    renderTableMonitoring();
+}
+
+// ─────────────────────────────────────────────
+//  MODAL: KOMPLEKS
+// ─────────────────────────────────────────────
+function openModalKompleks() {
+    document.getElementById('inp-kompleks-nama').value  = '';
+    document.getElementById('inp-kompleks-alamat').value = '';
+    document.getElementById('modal-kompleks').classList.add('open');
+}
+
+async function submitKompleks() {
+    const nama   = document.getElementById('inp-kompleks-nama').value.trim();
+    const alamat = document.getElementById('inp-kompleks-alamat').value.trim();
+    if (!nama || !alamat) return alert('Nama dan alamat wajib diisi');
+    try {
+        await apiFetch('/kompleks', { method: 'POST', body: JSON.stringify({ nama, alamat }) });
+        closeModal('modal-kompleks');
+        await refreshAll();
+    } catch (e) { alert(e.message); }
+}
+
+// ─────────────────────────────────────────────
+//  MODAL: UNIT (tambah / edit)
+// ─────────────────────────────────────────────
+function openModalUnit(unitId = null) {
+    const title = document.getElementById('modal-unit-title');
+    const selKompleks = document.getElementById('inp-unit-kompleksId');
+    selKompleks.innerHTML = '';
+    state.kompleks.forEach(k => {
+        const opt = document.createElement('option');
+        opt.value = k.id; opt.innerText = k.nama;
+        selKompleks.appendChild(opt);
+    });
+
+    if (unitId) {
+        const u = state.unit.find(x => x.id === unitId);
+        if (!u) return;
+        title.innerText = 'Edit Unit';
+        document.getElementById('inp-unit-id').value         = u.id;
+        selKompleks.value                                     = u.kompleksId;
+        document.getElementById('inp-unit-nama').value        = u.nama;
+        document.getElementById('inp-unit-harga').value       = u.harga;
+        document.getElementById('inp-unit-status').value      = u.status;
+        document.getElementById('inp-unit-penyewa').value     = u.penyewa === '-' ? '' : u.penyewa;
+        document.getElementById('inp-unit-telp').value        = u.telp === '-' ? '' : u.telp;
+        document.getElementById('inp-unit-tglMasuk').value    = u.tglMasuk === '-' ? '' : u.tglMasuk;
+        document.getElementById('inp-unit-jatuhTempo').value  = u.jatuhTempo === '-' ? '' : u.jatuhTempo;
+        document.getElementById('inp-unit-terakhirBayar').value = u.terakhirBayar === '-' ? '' : u.terakhirBayar;
+        document.getElementById('inp-unit-statusBayar').value = u.statusBayar === '-' ? '-' : u.statusBayar;
+    } else {
+        title.innerText = 'Tambah Unit Baru';
+        document.getElementById('inp-unit-id').value            = '';
+        document.getElementById('inp-unit-nama').value          = '';
+        document.getElementById('inp-unit-harga').value         = '';
+        document.getElementById('inp-unit-status').value        = 'Available';
+        document.getElementById('inp-unit-penyewa').value       = '';
+        document.getElementById('inp-unit-telp').value          = '';
+        document.getElementById('inp-unit-tglMasuk').value      = '';
+        document.getElementById('inp-unit-jatuhTempo').value    = '';
+        document.getElementById('inp-unit-terakhirBayar').value = '';
+        document.getElementById('inp-unit-statusBayar').value   = '-';
+    }
+    document.getElementById('modal-unit').classList.add('open');
+}
+
+async function submitUnit() {
+    const id          = document.getElementById('inp-unit-id').value;
+    const kompleksId  = document.getElementById('inp-unit-kompleksId').value;
+    const nama        = document.getElementById('inp-unit-nama').value.trim();
+    const harga       = parseInt(document.getElementById('inp-unit-harga').value);
+    const status      = document.getElementById('inp-unit-status').value;
+    const penyewa     = document.getElementById('inp-unit-penyewa').value.trim()     || '-';
+    const telp        = document.getElementById('inp-unit-telp').value.trim()        || '-';
+    const tglMasuk    = document.getElementById('inp-unit-tglMasuk').value.trim()    || '-';
+    const jatuhTempo  = document.getElementById('inp-unit-jatuhTempo').value.trim()  || '-';
+    const terakhirBayar = document.getElementById('inp-unit-terakhirBayar').value.trim() || '-';
+    const statusBayar = document.getElementById('inp-unit-statusBayar').value;
+
+    if (!nama || !harga) return alert('Nama dan harga wajib diisi');
+    const payload = { kompleksId, nama, harga, status, penyewa, telp, tglMasuk, jatuhTempo, terakhirBayar, statusBayar };
+    try {
+        if (id) {
+            await apiFetch('/unit/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+        } else {
+            await apiFetch('/unit', { method: 'POST', body: JSON.stringify(payload) });
+        }
+        closeModal('modal-unit');
+        await refreshAll();
+        // Re-show selected unit panel if editing
+        if (id) {
+            const updated = state.unit.find(u => u.id === id);
+            if (updated) showDetailPanelUnit(updated);
+        }
+    } catch (e) { alert(e.message); }
+}
+
+async function deleteUnit(unitId) {
+    if (!confirm('Yakin ingin menghapus unit ini?')) return;
+    try {
+        await apiFetch('/unit/' + unitId, { method: 'DELETE' });
+        document.getElementById('panel-placeholder').classList.remove('hidden');
+        document.getElementById('panel-content').classList.add('hidden');
+        await refreshAll();
+    } catch (e) { alert(e.message); }
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+}
+
+// Close modal on backdrop click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+// ─────────────────────────────────────────────
+//  ROUTING / NAV
+// ─────────────────────────────────────────────
+const navItems = document.querySelectorAll('.nav-item');
+const views    = document.querySelectorAll('.view-content');
+
+function switchView(targetViewId) {
+    views.forEach(v => v.classList.remove('active'));
+    const t = document.getElementById(targetViewId);
+    if (t) t.classList.add('active');
+    navItems.forEach(item => {
+        if (item.getAttribute('data-target') === targetViewId) {
+            item.className = "nav-item flex items-center px-3 py-3 rounded-lg text-primary font-bold border-r-4 border-primary bg-surface-container-low transition-colors duration-200";
+        } else {
+            item.className = "nav-item flex items-center px-3 py-3 rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-200";
+        }
+    });
+}
+
+navItems.forEach(item => {
+    item.addEventListener('click', e => {
+        e.preventDefault();
+        switchView(item.getAttribute('data-target'));
+    });
+});
+
+// ─────────────────────────────────────────────
+//  GLOBAL SEARCH
+// ─────────────────────────────────────────────
+document.getElementById('global-search').addEventListener('input', e => {
+    const kw = e.target.value.toLowerCase();
+    document.querySelectorAll('tbody tr').forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(kw) ? '' : 'none';
+    });
+});
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+(async () => {
+    await refreshAll();
+    switchView('dashboard');
+})();
+</script>
+</body>
+</html>
